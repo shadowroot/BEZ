@@ -8,14 +8,14 @@ tlamijan
 */
 #define BUFFER_SIZE 1024
 
-int readData(FILE * file, char * buffer, int len){
+int readData(FILE * file,void * buffer, int len){
   if(fread(buffer,1,len,file) < (unsigned)len){
     return 1;
   }
   return 0;
 }
 
-void writeData(FILE * file,char * data,int len){
+void writeData(FILE * file,void * data,int len){
   fwrite(data,1,len,file);
 }
 
@@ -26,12 +26,11 @@ void closeFile(FILE * file){
 int main(void) {
   unsigned char st[BUFFER_SIZE];  // sifrovany text
   unsigned char * key;  // klic pro sifrovani
-  unsigned char iv[EVP_MAX_IV_LENGTH] = "LALALALALALALA";  // inicializacni vektor
+  unsigned char iv[EVP_MAX_IV_LENGTH];  // inicializacni vektor
   unsigned char readBuffer[BUFFER_SIZE];
   const char * filename = "plain.txt";
   const char * outfilename = "crypted.txt";
-  const char * f2out = "plain2.txt";
-  unsigned char * keydec;
+  const char * keyfile = "key.txt";
 	
   int stLength = 0;
   int tmpLength = 0;
@@ -48,13 +47,14 @@ int main(void) {
  // printf("Reading pubkey\n");
   //EVP_PKEY_CTX * ctx = EVP_PKEY_CTX_new(pubkey,NULL);
   keyLength = EVP_PKEY_size(pubkey);
-  key = (unsigned char*) malloc(EVP_PKEY_size(pubkey));
+  key = (unsigned char*) malloc(keyLength);
 	
   EVP_SealInit(&ctx,
 	EVP_des_cbc(),
 	&key, &keyLength, iv,
 	&pubkey,
 	1);
+  FILE * fkeyfile = fopen(keyfile,"w+b");
   /*
   printf("Key length: %d\n",keyLength);
   for(int i=0 ; i < keyLength ; i++){
@@ -63,9 +63,11 @@ int main(void) {
    printf("\n");
    */
  // printf("Seal Init\n");
-  readlen = BUFFER_SIZE;
-  while( readlen == BUFFER_SIZE){
-          readlen = fread(readBuffer,1,BUFFER_SIZE,fplainin);
+  writeData(fkeyfile,(void*)iv,EVP_MAX_IV_LENGTH);
+  writeData(fkeyfile,(void*)key,keyLength);
+  printf("Keylength: %d\n",keyLength);
+  fclose(fkeyfile);
+  while((readlen =fread(readBuffer,1,BUFFER_SIZE,fplainin))!=0){
 	  EVP_SealUpdate(&ctx, st,&stLength, readBuffer, readlen);
 	  fwrite(st,1,stLength,fcyphedout);
 	 // printf("Seal update\n");
@@ -79,39 +81,6 @@ int main(void) {
 	Encrypting end
   */
   //EVP_CIPHER_CTX ctx;
-  FILE * fcyphedin = fopen(outfilename,"rb");
-  FILE * fplainout = fopen(f2out,"w+b");
-  
-  EVP_PKEY * privkey;
-  FILE * fprivkey = fopen("privkey.pem","rb");
-  
-  privkey = PEM_read_PrivateKey(fprivkey,NULL,NULL,NULL);
-  fclose(fprivkey);
  
-  keyLength = EVP_PKEY_size(privkey);
-  keydec = (unsigned char*) malloc(EVP_PKEY_size(privkey));
-  
-  EVP_OpenInit(&ctx,
-	       EVP_des_cbc(),
-	       key,
-	       keyLength,
-	       iv,
-	       privkey);
-  
-  //printf("Open init\n"); 
-
-  readlen = BUFFER_SIZE;
-  while(readlen == BUFFER_SIZE){
-	  readlen = fread(readBuffer,1,BUFFER_SIZE,fcyphedin);
-	  EVP_OpenUpdate(&ctx, st,&stLength, readBuffer, readlen);
-	  fwrite(st,1,stLength,fplainout);
-	 // printf("Open update\n");
-  }
-  EVP_OpenFinal(&ctx, st, &tmpLength);
-  fwrite(st,1,tmpLength,fplainout);
-  //printf("Open final\n");
-  fclose(fcyphedin);
-  fclose(fplainout);
   free(key);
-  free(keydec);
  }
