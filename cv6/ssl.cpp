@@ -45,9 +45,9 @@ while((readsize = recv(sockfd,(void*)buffer,BUFFER_SIZE,0)) != 0){
   
   SSL_library_init();
   SSL_CTX * ctx = SSL_CTX_new(SSLv23_client_method());
+  SSL_CTX_load_verify_locations(ctx,"ca.pem","/home/jonny/BEZ/cv6/");
   SSL * ssl = SSL_new(ctx);
   SSL_set_fd(ssl,sockfd);
-  //SSL_CTX_load_verify_locations(ctx,"ca.pem",".");
   SSL_connect(ssl);
   X509 *cert = SSL_get_peer_certificate(ssl);
   //1 for the CA that signed the certificate and so on.
