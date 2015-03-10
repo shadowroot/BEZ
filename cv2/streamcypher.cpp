@@ -6,7 +6,7 @@
 using namespace std;
 
 int main(void) {
-
+	const int buffLen = 1024;
   unsigned char known[1024] = "abcdefghijklmnopqrstuvwxyz0123";
   unsigned char knownst[1024];
   int knownstlen = 0;
@@ -17,6 +17,7 @@ int main(void) {
   unsigned char coleaguest[1024];
 
   ofstream outFile;
+  ifstream inFile;
 
   int colotLength = 0;
   int colstLength = 0;
@@ -48,7 +49,7 @@ int main(void) {
   outFile.write((char *)st,stLength);
   outFile.close();
   puts("\n");
-
+  /*
   EVP_EncryptInit(&ctx, EVP_rc4(), key, iv);  // nastaveni kontextu pro sifrovani
   EVP_EncryptUpdate(&ctx,  knownst, &knownstlen, known, (int)strlen((const char *)known));  // sifrovani ot
   EVP_EncryptFinal(&ctx, &knownst[knownstlen], &tmpLength);  // ziskani sifrovaneho textu z kontextu
@@ -60,10 +61,19 @@ int main(void) {
   outFile.open("known.bin");
   outFile.write((char*)knownst,knownstlen);
   outFile.close();
+  */
   outFile.open("known.txt");
   outFile << known;
   outFile.close();
   printf("\n");
+
+  inFile.open("known-edux.bin");
+	inFile.read((char*)knownst,buffLen);
+	inFile.close();
+
+  inFile.open("cyphed-edux.bin");
+  inFile.read((char*)st, buffLen);
+  inFile.close();
 
   for(int i=0 ; i < stLength; i++){
 	coleagueot[i] = (st[i] ^ knownst[i] ^ known[i]);
