@@ -42,7 +42,7 @@ int main(){
 	    exit(1);
 	  }
 	 
-	  while(hash[0] != 0){
+	  while(hash[0] != 0xAA || hash[1] != 0xBB){
 	  	genhash(text);
 	  	EVP_DigestInit(&ctx, type);
 	  	EVP_DigestUpdate(&ctx, text.c_str(), text.size());  // zahashuje text a ulozi do kontextu
