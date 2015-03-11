@@ -1,10 +1,11 @@
+ /*
+tlamijan
+*/
 #include <stdlib.h>
 #include <openssl/evp.h>
 #include <string.h>
 #include <stdio.h>
- /*
-tlamijan
-*/
+
 int main(void) {
  
   unsigned char ot[1024];  // open text
@@ -27,7 +28,7 @@ int main(void) {
 	FILE * fout = fopen(outfilename,"w+b");
 	if(!fin){
 		printf("File not found");
-	}
+  }
 
 	fread(header,1,14,fin);
 	fwrite(header,1,14,fout);

@@ -1,10 +1,9 @@
+/*tlamijan*/
 #include <stdlib.h>
 #include <openssl/evp.h>
 #include <string.h>
 #include <stdio.h>
- /*
-tlamijan
-*/
+
 int main(void) {
  
   unsigned char ot[1024];  // open text

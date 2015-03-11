@@ -1,10 +1,9 @@
+ /*tlamijan*/
 #include <stdlib.h>
 #include <openssl/evp.h>
 #include <string.h>
 #include <stdio.h>
- /*
-tlamijan
-*/
+
 int main(void) {
  
   unsigned char ot[1024];  // open text
@@ -12,7 +11,7 @@ int main(void) {
   unsigned char key[EVP_MAX_KEY_LENGTH] = "Super tajny klic";  // klic pro sifrovani
   unsigned char iv[EVP_MAX_IV_LENGTH] = "vector unknown";  // inicializacni vektor
   const char * filename = "Mad_scientist.bmp";
-  const char * outfilename = "Mad_scientist_ebc.bmp";
+  const char * outfilename = "Mad_scientist_ecb.bmp";
 
   int otLength = 0;
   int stLength = 0;

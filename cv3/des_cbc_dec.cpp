@@ -1,19 +1,17 @@
+ /*tlamijan*/
 #include <stdlib.h>
 #include <openssl/evp.h>
 #include <string.h>
 #include <stdio.h>
- /*
 
-tlamijan
-*/
 int main(void) {
  
   unsigned char ot[1024];  // open text
   unsigned char st[1024];  // sifrovany text
   unsigned char key[EVP_MAX_KEY_LENGTH] = "Super tajny klic";  // klic pro sifrovani
   unsigned char iv[EVP_MAX_IV_LENGTH] = "vector unknown";  // inicializacni vektor
-  const char * filename = "Mad_scientist.bmp";
-  const char * outfilename = "Mad_scientist_cbc.bmp";
+  const char * filename = "Mad_scientist_cbc.bmp";
+  const char * outfilename = "Mad_scientist_cbc_dec.bmp";
 
   int otLength = 0;
   int stLength = 0;
@@ -44,14 +42,14 @@ int main(void) {
 	fwrite(ot,1,offset,fout);
 	
 
- EVP_EncryptInit(&ctx, EVP_des_ecb(), key, iv);  // nastaveni kontextu pro sifrovani
+ EVP_DecryptInit(&ctx, EVP_des_cbc(), key, iv);  // nastaveni kontextu pro sifrovani
   do{
 	  readlen = fread(ot,1,1024,fin);
-	  EVP_EncryptUpdate(&ctx,  st, &stLength, ot, readlen);  // sifrovani ot
+	  EVP_DecryptUpdate(&ctx,  st, &stLength, ot, readlen);  // sifrovani ot
 	  fwrite(st,1,stLength,fout);
   }while(readlen == 1024);
   
-  EVP_EncryptFinal(&ctx, &st[stLength], &tmpLength);  // ziskani sifrovaneho textu z kontextu
+  EVP_DecryptFinal(&ctx, &st[stLength], &tmpLength);  // ziskani sifrovaneho textu z kontextu
   fwrite(&st[stLength],1,tmpLength,fout);
   stLength += tmpLength;
 
