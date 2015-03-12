@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <openssl/pem.h>
+#include <openssl/err.h>
 
 #define BUFFER_SIZE 1024
 #define KEYLEN 256
@@ -13,6 +14,7 @@ int main(int argc,const char * argv[]) {
   unsigned char key[KEYLEN];  // klic pro sifrovani
   unsigned char iv[EVP_MAX_IV_LENGTH];  // inicializacni vektor
   unsigned char readBuffer[BUFFER_SIZE];
+  char err_str[KEYLEN];
   const char * infilename = argv[1];
   const char * f2out = argv[3];
   const char * keyfile = argv[2];
@@ -26,13 +28,14 @@ int main(int argc,const char * argv[]) {
   int keyLength = 0;
   EVP_CIPHER_CTX ctx;
   int nid = 0;
+  unsigned long errn = 0;
 
   FILE * fcyphedin = fopen(infilename,"rb");
   FILE * fplainout = fopen(f2out,"w+b");
   
   EVP_PKEY * privkey = NULL;
   FILE * fprivkey = fopen(keyfile,"rb");
-  
+ 
   privkey = PEM_read_PrivateKey(fprivkey,NULL,NULL,NULL);
   fclose(fprivkey);
 
@@ -42,7 +45,11 @@ int main(int argc,const char * argv[]) {
   fread(key,1,keyLength,fcyphedin);
   printf("NID: %d\n",nid);
   printf("Keylength: %d\n",keyLength);
-  printf("%p\n",EVP_get_cipherbynid(nid));
+  
+  //Inicializace šifer a algoritmů aby chodilo cipherbynid
+  OpenSSL_add_all_algorithms();
+  OpenSSL_add_all_ciphers();
+
   EVP_OpenInit(&ctx,
 	       EVP_get_cipherbynid(nid),
          //EVP_des_cbc(),
@@ -50,6 +57,10 @@ int main(int argc,const char * argv[]) {
 	       keyLength,
 	       iv,
 	       privkey);
+  while(errn = ERR_get_error()){
+    ERR_error_string_n(errn, err_str, KEYLEN);
+    printf("%s\n", err_str);
+  }
   
   //printf("Open init\n"); 
 
@@ -63,5 +74,7 @@ int main(int argc,const char * argv[]) {
   //printf("Open final\n");
   fclose(fcyphedin);
   fclose(fplainout);
+  
+  return 0;
 
 }  
