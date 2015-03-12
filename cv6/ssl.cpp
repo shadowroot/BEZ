@@ -1,3 +1,4 @@
+ /*tlamijan*/
 #include <stdlib.h>
 #include <openssl/ssl.h>
 #include <string.h>
@@ -7,9 +8,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
- /*
-tlamijan
-*/
+
 #define BUFFER_SIZE 1024
 
 int main(void) {
@@ -45,7 +44,7 @@ while((readsize = recv(sockfd,(void*)buffer,BUFFER_SIZE,0)) != 0){
   
   SSL_library_init();
   SSL_CTX * ctx = SSL_CTX_new(SSLv23_client_method());
-  SSL_CTX_load_verify_locations(ctx,"ca.pem","/home/jonny/BEZ/cv6/");
+  SSL_CTX_load_verify_locations(ctx,"cert.pem","/etc/ssl/certs/");
   SSL * ssl = SSL_new(ctx);
   SSL_set_fd(ssl,sockfd);
   SSL_connect(ssl);
@@ -64,7 +63,7 @@ while((readsize = recv(sockfd,(void*)buffer,BUFFER_SIZE,0)) != 0){
   const SSL_CIPHER *cipher = SSL_get_current_cipher(ssl);
   const char * cipher_name = NULL;
   int priority = 0;
-  printf("Usend cipher was %s\n",SSL_CIPHER_get_name(cipher));
+  printf("Used cipher was %s\n",SSL_CIPHER_get_name(cipher));
   cipher_name = SSL_get_cipher_list(ssl,priority);
   while(cipher_name != NULL){
     printf("Priority: %d\t CIPHER: %s\n",priority,cipher_name);
