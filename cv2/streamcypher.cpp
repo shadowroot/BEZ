@@ -1,3 +1,4 @@
+/*tlamijan*/
 #include <stdlib.h>
 #include <openssl/evp.h>
 #include <string.h>
@@ -30,7 +31,7 @@ int main(void) {
   
 
   printf("OT: %s\n", ot);
- 
+  //Nevyužívá IV
   /* Sifrovani */
   EVP_EncryptInit(&ctx, EVP_rc4(), key, iv);  // nastaveni kontextu pro sifrovani
   EVP_EncryptUpdate(&ctx,  st, &stLength, ot, otLength);  // sifrovani ot

@@ -3,7 +3,8 @@
 #include <openssl/evp.h>
 #include <string.h>
 #include <stdio.h>
-
+#include <iostream>
+using namespace std;
 int main(void) {
  
   unsigned char ot[1024];  // open text
@@ -48,10 +49,10 @@ int main(void) {
 	  EVP_EncryptUpdate(&ctx,  st, &stLength, ot, readlen);  // sifrovani ot
 	  fwrite(st,1,stLength,fout);
   }while(readlen == 1024);
-  
+  cout <<  stLength << endl;
   EVP_EncryptFinal(&ctx, &st[stLength], &tmpLength);  // ziskani sifrovaneho textu z kontextu
-  fwrite(&st[stLength],1,tmpLength,fout);
   stLength += tmpLength;
+  fwrite(&st[stLength],1,tmpLength,fout);
 
   fclose(fin);
   fclose(fout);
